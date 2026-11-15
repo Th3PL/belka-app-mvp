@@ -76,8 +76,11 @@ resource "azurerm_container_app" "ollama" {
 
   ingress {
     external_enabled = false
-    target_port      = 11434
-    transport        = "http"
+    # HTTP só dentro do ambiente (ingress interno, sem acesso da internet);
+    # sem isso a chamada http://belka-ollama recebe 301 para HTTPS e o cliente falha.
+    allow_insecure_connections = true
+    target_port                = 11434
+    transport                  = "http"
     traffic_weight {
       latest_revision = true
       percentage      = 100
