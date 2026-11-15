@@ -1,0 +1,41 @@
+# Stack local completa: API + LLM (Ollama com qwen2.5:1.5b embutido).
+#   docker compose up --build
+#   http://localhost:8000
+# Variáveis opcionais (Databricks etc.) vêm do arquivo .env, que NÃO é versionado.
+services:
+  api:
+    build: .
+    image: belka-api:local
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: qwen2.5:1.5b
+    depends_on:
+      ollama:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  ollama:
+    build: ./ollama
+    image: belka-ollama:local
+    # Sem "ports": o LLM só é acessível pela rede interna do compose.
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped

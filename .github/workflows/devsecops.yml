@@ -1,0 +1,162 @@
+name: DevSecOps - build, scan e deploy
+
+# Roda a cada push e pull request. Deploy somente na main.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: devsecops-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # 1) Segredo vazado barra o pipeline
+  gitleaks:
+    name: Gitleaks (segredos)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # varre todo o histórico, não só o último commit
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 2) Análise estática (código Python, Dockerfile e Terraform)
+  semgrep:
+    name: Semgrep (SAST)
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - run: >
+          semgrep scan
+          --config p/python
+          --config p/dockerfile
+          --config p/terraform
+          --error --metrics=off
+
+  # 3) Build + Trivy; push das imagens só na main
+  build:
+    name: Build + Trivy
+    needs: [gitleaks, semgrep]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      api_image: ${{ steps.names.outputs.api }}
+      ollama_image: ${{ steps.names.outputs.ollama }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Nomes das imagens
+        id: names
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "api=ghcr.io/${owner}/belka-api:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "ollama=ghcr.io/${owner}/belka-ollama:${{ hashFiles('ollama/Dockerfile') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build da API
+        run: docker build -t "${{ steps.names.outputs.api }}" .
+
+      - name: Trivy - vulnerabilidades da imagem da API (barra HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ steps.names.outputs.api }}
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+
+      - name: Trivy - configuração (Dockerfile e Terraform)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: .
+          exit-code: "1"
+          severity: CRITICAL,HIGH
+
+      - name: Login no GHCR
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push da API
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: docker push "${{ steps.names.outputs.api }}"
+
+      # A imagem do LLM (~1,5 GB) só é reconstruída quando ollama/Dockerfile muda.
+      - name: Build e push do Ollama (se ainda não existir)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          img="${{ steps.names.outputs.ollama }}"
+          if docker manifest inspect "$img" >/dev/null 2>&1; then
+            echo "Imagem $img já publicada, reutilizando."
+          else
+            docker build -t "$img" ./ollama
+            docker push "$img"
+          fi
+
+  # 4) Deploy automático: Terraform aplica a infraestrutura com a nova imagem
+  deploy:
+    name: Deploy (Terraform -> Azure Container Apps)
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write # OIDC: login na Azure sem senha guardada
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_resource_group_name: ${{ vars.AZURE_RESOURCE_GROUP }}
+      TF_VAR_api_image: ${{ needs.build.outputs.api_image }}
+      TF_VAR_ollama_image: ${{ needs.build.outputs.ollama_image }}
+      TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
+      TF_VAR_ollama_min_replicas: ${{ vars.OLLAMA_MIN_REPLICAS || '0' }}
+      TF_VAR_databricks_server_hostname: ${{ secrets.DATABRICKS_SERVER_HOSTNAME }}
+      TF_VAR_databricks_http_path: ${{ secrets.DATABRICKS_HTTP_PATH }}
+      TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: terraform init (state remoto no Azure Storage)
+        run: >
+          terraform init -input=false
+          -backend-config="resource_group_name=${{ vars.TFSTATE_RESOURCE_GROUP }}"
+          -backend-config="storage_account_name=${{ vars.TFSTATE_STORAGE_ACCOUNT }}"
+          -backend-config="use_oidc=true"
+
+      - run: terraform fmt -check -recursive
+      - run: terraform validate
+      - run: terraform plan -input=false -out=tfplan
+      - run: terraform apply -input=false -auto-approve tfplan
+
+      - name: Teste de fumaça
+        run: |
+          url="$(terraform output -raw api_url)"
+          echo "MVP publicado em: $url" >> "$GITHUB_STEP_SUMMARY"
+          for i in $(seq 1 20); do
+            if curl -fsS "$url/health"; then exit 0; fi
+            sleep 15
+          done
+          echo "API não respondeu em $url/health" && exit 1

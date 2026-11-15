@@ -1,0 +1,20 @@
+# Nunca levar para a imagem: ambiente local, segredos, artefatos pesados e IaC
+.venv/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.pytest_cache/
+.git/
+.github/
+infra/
+docs/
+ollama/
+outputs/
+*.tfvars
+*.tfstate*
+.terraform/
+docker-compose*.yml
+Dockerfile*
+README.md

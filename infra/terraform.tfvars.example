@@ -1,0 +1,12 @@
+# Copie para terraform.tfvars (ignorado pelo git) SOMENTE para testes locais.
+# No pipeline, os valores vêm de GitHub Secrets via variáveis TF_VAR_*.
+resource_group_name = "rg-belka"
+api_image           = "ghcr.io/SEU_USUARIO/belka-api:latest"
+ollama_image        = "ghcr.io/SEU_USUARIO/belka-ollama:latest"
+alert_email         = "equipe@exemplo.com"
+ollama_min_replicas = 0
+
+# Opcional (camada Ouro do Databricks). Deixe vazio para usar o snapshot.
+databricks_server_hostname = ""
+databricks_http_path       = ""
+databricks_token           = ""

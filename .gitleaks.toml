@@ -1,0 +1,10 @@
+# Regras padrão do Gitleaks + exceção para arquivos de vocabulário do tokenizer
+# (strings aleatórias do modelo, não credenciais).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Artefatos do tokenizer/adaptador LoRA"
+paths = [
+  '''outputs/belka-lora/(tokenizer\.json|vocab\.json|merges\.txt)$''',
+]
