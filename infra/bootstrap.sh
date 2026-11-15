@@ -58,6 +58,20 @@ az identity federated-credential create --name "github-${GH_ENVIRONMENT}" \
   --subject "repo:${GITHUB_REPO}:environment:${GH_ENVIRONMENT}" \
   --audiences "api://AzureADTokenExchange" -o none
 
+# O GitHub pode emitir o subject no formato com IDs imutáveis
+# (repo:dono@ID/repo@ID:environment:...). Se o gh CLI estiver logado, cria também essa variante.
+if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  OWNER_ID="$(gh api "repos/${GITHUB_REPO}" --jq .owner.id)"
+  REPO_ID="$(gh api "repos/${GITHUB_REPO}" --jq .id)"
+  az identity federated-credential create --name "github-${GH_ENVIRONMENT}-ids" \
+    --identity-name "$IDENTITY" -g "$STATE_RG" \
+    --issuer "https://token.actions.githubusercontent.com" \
+    --subject "repo:${GITHUB_REPO%%/*}@${OWNER_ID}/${GITHUB_REPO##*/}@${REPO_ID}:environment:${GH_ENVIRONMENT}" \
+    --audiences "api://AzureADTokenExchange" -o none
+else
+  echo "!! gh CLI não logado: se o deploy falhar com AADSTS700213, crie a credencial com o subject exibido no erro."
+fi
+
 # Menor privilégio: Contributor só no RG da aplicação; leitura/escrita só no blob do state.
 az role assignment create --assignee-object-id "$PRINCIPAL_ID" --assignee-principal-type ServicePrincipal \
   --role Contributor --scope "$APP_RG_ID" -o none
