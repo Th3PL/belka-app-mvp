@@ -71,7 +71,7 @@
       <tr><td>Workflow DevSecOps</td><td><a href="https://github.com/Th3PL/belka-app-mvp/blob/main/.github/workflows/devsecops.yml">.github/workflows/devsecops.yml</a></td></tr>
       <tr><td>Execuções do pipeline</td><td><a href="https://github.com/Th3PL/belka-app-mvp/actions">https://github.com/Th3PL/belka-app-mvp/actions</a></td></tr>
       <tr><td>Execução barrada (Gitleaks)</td><td><a href="https://github.com/Th3PL/belka-app-mvp/actions/runs/43745100897">https://github.com/Th3PL/belka-app-mvp/actions/runs/43745100897</a></td></tr>
-      <tr><td>Execução corrigida (verde)</td><td><a href="https://github.com/Th3PL/belka-app-mvp/actions?query=branch%3Ademo%2Fsegredo-vazado">https://github.com/Th3PL/belka-app-mvp/actions?query=branch%3Ademo%2Fsegredo-vazado</a></td></tr>
+      <tr><td>Execução corrigida (verde)</td><td><a href="https://github.com/Th3PL/belka-app-mvp/actions/runs/43753452950">https://github.com/Th3PL/belka-app-mvp/actions/runs/43753452950</a></td></tr>
       <tr><td>Deploy em produção (main)</td><td><a href="https://github.com/Th3PL/belka-app-mvp/actions/runs/43747965034">https://github.com/Th3PL/belka-app-mvp/actions/runs/43747965034</a></td></tr>
     </table>
   </div>
@@ -284,8 +284,13 @@ RuleID: generic-api-key    File: app/config_demo.py   Line: 3
 WRN leaks found: 2
 Gitleaks: failure · Semgrep: success · Build + Trivy: skipped · Deploy: skipped</pre>
 <figure><img src="prints/09-pipeline-barrado.png" alt="Execução barrada pelo Gitleaks"><figcaption>Execução barrada pelo Gitleaks</figcaption></figure>
-  <p><span class="ok">Corrigida:</span> credencial removida e histórico da branch reescrito; o pipeline volta a passar. <a href="https://github.com/Th3PL/belka-app-mvp/actions?query=branch%3Ademo%2Fsegredo-vazado">https://github.com/Th3PL/belka-app-mvp/actions?query=branch%3Ademo%2Fsegredo-vazado</a></p>
-<div class="ph"><b>PRINT PENDENTE</b> — Mesma branch após a correção: todos os jobs verdes<br><code>docs/entrega/prints/10-pipeline-corrigido.png</code></div>
+  <p><span class="ok">Corrigida:</span> o commit com a credencial (<code>bdc0e0c</code>) foi descartado do histórico da branch (<code>git reset</code> + <code>push --force-with-lease</code>) — apagar o arquivo num commit novo não basta, porque o Gitleaks varre o histórico inteiro. Na mesma branch (<code>dc5eb3a</code>), Gitleaks, Semgrep e Build + Trivy passam; o deploy é pulado por não ser a <code>main</code>. <a href="https://github.com/Th3PL/belka-app-mvp/actions/runs/43753452950">https://github.com/Th3PL/belka-app-mvp/actions/runs/43753452950</a></p>
+  <pre>$ git reset --hard HEAD~1                      # descarta o commit com a credencial
+$ git commit --allow-empty -m "demo: corrige vazamento removendo a credencial do histórico"
+$ git push --force-with-lease origin demo/segredo-vazado
+ + bdc0e0c...dc5eb3a demo/segredo-vazado -> demo/segredo-vazado (forced update)
+Gitleaks: success · Semgrep: success · Build + Trivy: success · Deploy: skipped (não é main)</pre>
+<figure><img src="prints/10-pipeline-corrigido.png" alt="Mesma branch após a correção: todos os jobs verdes"><figcaption>Mesma branch após a correção: todos os jobs verdes</figcaption></figure>
   <div class="note">Também barrado durante o desenvolvimento: o <b>Trivy</b> reprovou a imagem por 2 CVEs HIGH no <code>zlib1g</code> da base Debian; a correção foi aplicar <code>apt-get upgrade</code> no Dockerfile (resultado: 0 HIGH/CRITICAL).</div>
 <figure><img src="prints/11-pipeline-main.png" alt="Execução na main com deploy automático e teste de fumaça"><figcaption>Execução na main com deploy automático e teste de fumaça</figcaption></figure>
 </section>

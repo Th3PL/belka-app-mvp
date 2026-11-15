@@ -183,7 +183,12 @@ RuleID: generic-api-key    File: app/config_demo.py   Line: 3
 WRN leaks found: 2
 Gitleaks: failure · Semgrep: success · Build + Trivy: skipped · Deploy: skipped</pre>
   <!--PRINT:09-pipeline-barrado.png|Execução barrada pelo Gitleaks-->
-  <p><span class="ok">Corrigida:</span> credencial removida e histórico da branch reescrito; o pipeline volta a passar. <a href="{{RUN_FIXED}}">{{RUN_FIXED}}</a></p>
+  <p><span class="ok">Corrigida:</span> o commit com a credencial (<code>bdc0e0c</code>) foi descartado do histórico da branch (<code>git reset</code> + <code>push --force-with-lease</code>) — apagar o arquivo num commit novo não basta, porque o Gitleaks varre o histórico inteiro. Na mesma branch (<code>dc5eb3a</code>), Gitleaks, Semgrep e Build + Trivy passam; o deploy é pulado por não ser a <code>main</code>. <a href="{{RUN_FIXED}}">{{RUN_FIXED}}</a></p>
+  <pre>$ git reset --hard HEAD~1                      # descarta o commit com a credencial
+$ git commit --allow-empty -m "demo: corrige vazamento removendo a credencial do histórico"
+$ git push --force-with-lease origin demo/segredo-vazado
+ + bdc0e0c...dc5eb3a demo/segredo-vazado -> demo/segredo-vazado (forced update)
+Gitleaks: success · Semgrep: success · Build + Trivy: success · Deploy: skipped (não é main)</pre>
   <!--PRINT:10-pipeline-corrigido.png|Mesma branch após a correção: todos os jobs verdes-->
   <div class="note">Também barrado durante o desenvolvimento: o <b>Trivy</b> reprovou a imagem por 2 CVEs HIGH no <code>zlib1g</code> da base Debian; a correção foi aplicar <code>apt-get upgrade</code> no Dockerfile (resultado: 0 HIGH/CRITICAL).</div>
   <!--PRINT:11-pipeline-main.png|Execução na main com deploy automático e teste de fumaça-->
