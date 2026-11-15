@@ -117,7 +117,7 @@ resource "azurerm_container_app" "api" {
       memory = "1Gi"
 
       env {
-        name  = "OLLAMA_URL"
+        name = "OLLAMA_URL"
         # FQDN do ingress INTERNO (só resolve/aceita dentro do ambiente), com TLS gerenciado.
         # http:// recebe 301 para HTTPS e ambientes "express" não permitem allowInsecure.
         value = "https://${azurerm_container_app.ollama.ingress[0].fqdn}"
