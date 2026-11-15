@@ -1,7 +1,8 @@
 # Stack local completa: API + LLM (Ollama com qwen2.5:1.5b embutido).
 #   docker compose up --build
 #   http://localhost:8000
-# Variáveis opcionais (Databricks etc.) vêm do arquivo .env, que NÃO é versionado.
+# Variáveis vêm do arquivo .env, que NÃO é versionado. Antes do primeiro "up":
+#   echo "OLLAMA_API_KEY=$(openssl rand -hex 32)" >> .env
 services:
   api:
     build: .
@@ -12,8 +13,9 @@ services:
       - path: .env
         required: false
     environment:
-      OLLAMA_URL: http://ollama:11434
+      OLLAMA_URL: http://ollama:8080
       OLLAMA_MODEL: qwen2.5:1.5b
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:?defina OLLAMA_API_KEY no .env (veja o topo deste arquivo)}
     depends_on:
       ollama:
         condition: service_healthy
@@ -29,9 +31,11 @@ services:
   ollama:
     build: ./ollama
     image: belka-ollama:local
-    # Sem "ports": o LLM só é acessível pela rede interna do compose.
+    # Sem "ports": o LLM só é acessível pela rede interna do compose, e ainda exige o token.
+    environment:
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:?defina OLLAMA_API_KEY no .env (veja o topo deste arquivo)}
     healthcheck:
-      test: ["CMD", "ollama", "list"]
+      test: ["CMD", "sh", "-c", "OLLAMA_HOST=127.0.0.1:11434 ollama list >/dev/null"]
       interval: 10s
       timeout: 5s
       retries: 12

@@ -54,13 +54,29 @@ resource "azurerm_container_app_environment" "main" {
   tags                       = var.tags
 }
 
-# LLM: ingress SOMENTE interno — inacessível pela internet.
+# Token que a API apresenta ao proxy do LLM. Gerado aqui, guardado só no state
+# (Storage privado) e entregue aos dois apps como secret do Container Apps.
+resource "random_password" "ollama_api_key" {
+  length  = 48
+  special = false
+}
+
+# LLM atrás de proxy com token.
+# A assinatura Azure for Students só oferece ambientes "Express" (o modo Standard é recusado
+# em todas as regiões permitidas), e no Express não há descoberta de serviços internos:
+# apps conversam pela URL pública. Por isso o ingress é externo, mas o Ollama escuta só em
+# 127.0.0.1 e o Caddy (porta 8080) devolve 401 a qualquer chamada sem o Bearer token.
 resource "azurerm_container_app" "ollama" {
   name                         = "${var.prefix}-ollama"
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"
   tags                         = var.tags
+
+  secret {
+    name  = "ollama-api-key"
+    value = random_password.ollama_api_key.result
+  }
 
   template {
     min_replicas = var.ollama_min_replicas
@@ -71,12 +87,17 @@ resource "azurerm_container_app" "ollama" {
       image  = var.ollama_image
       cpu    = 2
       memory = "4Gi"
+
+      env {
+        name        = "OLLAMA_API_KEY"
+        secret_name = "ollama-api-key"
+      }
     }
   }
 
   ingress {
-    external_enabled = false
-    target_port      = 11434
+    external_enabled = true
+    target_port      = 8080
     transport        = "http"
     traffic_weight {
       latest_revision = true
@@ -96,6 +117,11 @@ resource "azurerm_container_app" "api" {
   secret {
     name  = "appinsights-connection-string"
     value = azurerm_application_insights.main.connection_string
+  }
+
+  secret {
+    name  = "ollama-api-key"
+    value = random_password.ollama_api_key.result
   }
 
   dynamic "secret" {
@@ -118,9 +144,12 @@ resource "azurerm_container_app" "api" {
 
       env {
         name = "OLLAMA_URL"
-        # FQDN do ingress INTERNO (só resolve/aceita dentro do ambiente), com TLS gerenciado.
-        # http:// recebe 301 para HTTPS e ambientes "express" não permitem allowInsecure.
+        # URL HTTPS do proxy do LLM (TLS gerenciado pela Azure).
         value = "https://${azurerm_container_app.ollama.ingress[0].fqdn}"
+      }
+      env {
+        name        = "OLLAMA_API_KEY"
+        secret_name = "ollama-api-key"
       }
       env {
         name  = "OLLAMA_MODEL"

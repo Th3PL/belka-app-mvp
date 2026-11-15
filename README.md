@@ -6,19 +6,26 @@ Aplicação web responsiva integrada, a partir dos repositórios acadêmicos Big
 
 | Campo | Conteúdo |
 |---|---|
-| Nome do produto | Belka |
-| Cidadão e território | _preencher: ex. moradores de áreas de risco de alagamento em São Paulo_ |
-| Problema, em uma frase | _preencher_ |
-| Proposta de valor | _preencher_ |
-| Arquitetura: componentes | API FastAPI + LLM local (Ollama qwen2.5:1.5b) + RAG + camada Ouro Databricks, em Azure Container Apps — ver [docs/ENTREGA-CLOUD.md](docs/ENTREGA-CLOUD.md) |
-| Fontes de dados | Open-Meteo (previsão), base de conhecimento `base/` (Defesa Civil etc.), camada Ouro do Databricks |
-| Modelos de IA utilizados | Qwen2.5-1.5B-Instruct (Ollama) + adaptador LoRA próprio (`outputs/belka-lora`) |
-| URL do MVP | _preencher após o deploy: https://belka-api.xxxx.brazilsouth.azurecontainerapps.io_ |
-| Repositório | _preencher: https://github.com/USUARIO/belka-app-mvp_ |
-| Indicadores de impacto | _preencher_ |
-| ODS conectados | _preencher: ex. ODS 11, ODS 13_ |
+| Nome do produto | **Belka** — "Olhar longe. Proteger perto." |
+| Cidadão e território | Moradores de municípios paulistas expostos a alagamentos, deslizamentos e calor extremo, inclusive com celulares de entrada e pouca conectividade. Piloto: São Paulo, Guarulhos, Campinas, Franco da Rocha e São Sebastião (SP). |
+| Problema, em uma frase | Em eventos climáticos extremos, o cidadão não encontra em um só lugar uma informação clara sobre o risco no seu município nem uma orientação confiável sobre o que fazer. |
+| Proposta de valor | Um app web leve e acessível que reúne indicadores de risco por município (dados públicos tratados em camadas) e um assistente de IA que orienta com base em fontes oficiais, sempre citando a fonte e recusando quando não sabe — complementando, nunca substituindo, a Defesa Civil. |
+| Arquitetura: componentes | Front-end web mobile-first + API FastAPI + LLM local (Ollama qwen2.5:1.5b) com RAG e agente + camada Ouro no Databricks; em produção no Azure Container Apps com CI/CD DevSecOps — ver [docs/ENTREGA-CLOUD.md](docs/ENTREGA-CLOUD.md) |
+| Fontes de dados | Open-Meteo Forecast/Flood API (previsão), IBGE (população por município), Defesa Civil Nacional e Ministério da Saúde (base de conhecimento em `base/`), camada Ouro do Databricks (`ouro_fato_risco_hora`) |
+| Modelos de IA utilizados | Qwen2.5-1.5B-Instruct via Ollama (RAG + agente com ferramenta de clima) e adaptador LoRA próprio (`outputs/belka-lora`) |
+| URL do MVP | https://belka-api.salmonisland-04dfa6a6.brazilsouth.azurecontainerapps.io |
+| Repositório | https://github.com/Th3PL/belka-app-mvp |
+| Indicadores de impacto | Consultas e usuários ativos por município; % de respostas fundamentadas com citação e taxa de alucinação (vs. modelo sem contexto); disponibilidade e latência p95 do serviço; nº de municípios monitorados |
+| ODS conectados | ODS 11 (meta 11.5 — reduzir perdas por desastres), ODS 13 (meta 13.1 — resiliência a riscos climáticos), ODS 3 (meta 3.d — alerta precoce de riscos à saúde, ex.: ondas de calor) |
 
-**Integrantes:** _Nome 1 (RM), Nome 2 (RM), ..._
+**Integrantes:**
+
+| Nome | RM |
+|---|---|
+| Fernanda Kaory Saito | RM 551104 |
+| João Pedro Borsato | RM 550294 |
+| Maria Fernanda Camargo | RM 97956 |
+| Pedro Lucas Nunes | RM 550366 |
 
 ## Telas
 - `/` — início
@@ -33,7 +40,7 @@ Pré-requisito: Docker Desktop.
 docker compose up --build
 ```
 
-Abra http://localhost:8000. O primeiro build baixa o modelo `qwen2.5:1.5b` (~1 GB) para dentro da imagem do Ollama. O LLM não é exposto fora da rede do compose.
+Abra http://localhost:8000. Antes do primeiro `up`, gere o token do proxy do LLM: `echo "OLLAMA_API_KEY=$(openssl rand -hex 32)" >> .env`. O primeiro build baixa o modelo `qwen2.5:1.5b` (~1 GB) para dentro da imagem do Ollama, que não é exposto fora da rede do compose.
 
 Variáveis opcionais (Databricks) vão em um arquivo `.env` baseado em `.env.example` — o `.env` é ignorado pelo git.
 
@@ -100,7 +107,7 @@ uvicorn app.main:app --reload --host 0.0.0.0
 Em produção os três valores ficam em **GitHub Secrets** e chegam ao container como *secrets* do Azure Container Apps. Nunca publique o token no GitHub, no HTML, em screenshots ou em arquivos versionados — o Gitleaks barra o pipeline se isso acontecer. Se a consulta falhar, a API devolve 503 em vez de trocar silenciosamente para o snapshot. Sem as três variáveis, a aplicação usa o JSON histórico.
 
 ## Segurança e LGPD (resumo)
-- Containers sem root; LLM sem acesso pela internet; nenhuma VM nem porta de administração (SSH/RDP) existe.
+- Containers sem root; nenhuma VM nem porta de administração (SSH/RDP) existe; o LLM fica atrás de um proxy que exige token (401 sem ele) — decisão explicada em docs/ENTREGA-CLOUD.md.
 - Segredos só em GitHub Secrets / secrets do Container Apps; login do pipeline na Azure via OIDC (sem senha).
 - Coordenadas arredondadas (~1 km); query string removida da telemetria; texto das perguntas não é registrado; IP mascarado no Application Insights.
 - Detalhes: [docs/ENTREGA-CLOUD.md](docs/ENTREGA-CLOUD.md).

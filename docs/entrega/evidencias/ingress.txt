@@ -1,0 +1,13 @@
+$ az containerapp list -g rg-belka --query "[].{app:name, externo:properties.configuration.ingress.external, porta:properties.configuration.ingress.targetPort}" -o table
+App           Externo    Porta
+------------  ---------  -------
+belka-ollama  False      11434
+belka-api     True       8000
+
+$ az vm list -g rg-belka -o tsv | wc -l   # nenhuma VM = nenhuma porta SSH/RDP
+0
+
+$ az storage account show -n stbelkatf2538618077 --query "{chaveCompartilhada:allowSharedKeyAccess, blobPublico:allowBlobPublicAccess, tls:minimumTlsVersion}" -o table
+ChaveCompartilhada    BlobPublico    Tls
+--------------------  -------------  ------
+False                 False          TLS1_2

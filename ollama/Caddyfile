@@ -1,0 +1,25 @@
+# Proxy de autenticação na frente do Ollama.
+# O Ollama não tem autenticação própria e escuta só em 127.0.0.1:11434 dentro do container.
+# Toda chamada externa passa por aqui e precisa de "Authorization: Bearer <OLLAMA_API_KEY>".
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+:8080 {
+	@autorizado header Authorization "Bearer {$OLLAMA_API_KEY}"
+
+	handle @autorizado {
+		reverse_proxy 127.0.0.1:11434 {
+			# O Ollama recusa (403) Host diferente de localhost quando escuta em loopback.
+			header_up Host 127.0.0.1:11434
+			# O token não segue para o Ollama.
+			header_up -Authorization
+		}
+	}
+
+	handle {
+		respond "unauthorized" 401
+	}
+}

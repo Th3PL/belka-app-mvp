@@ -60,7 +60,7 @@ jobs:
         run: |
           owner="${GITHUB_REPOSITORY_OWNER,,}"
           echo "api=ghcr.io/${owner}/belka-api:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-          echo "ollama=ghcr.io/${owner}/belka-ollama:${{ hashFiles('ollama/Dockerfile') }}" >> "$GITHUB_OUTPUT"
+          echo "ollama=ghcr.io/${owner}/belka-ollama:${{ hashFiles('ollama/**') }}" >> "$GITHUB_OUTPUT"
 
       - name: Build da API
         run: docker build -t "${{ steps.names.outputs.api }}" .
@@ -95,7 +95,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: docker push "${{ steps.names.outputs.api }}"
 
-      # A imagem do LLM (~1,5 GB) só é reconstruída quando ollama/Dockerfile muda.
+      # A imagem do LLM (~1,5 GB) só é reconstruída quando algo em ollama/ muda.
       - name: Build e push do Ollama (se ainda não existir)
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |

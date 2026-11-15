@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Belka — Deploy Blindado (Secure DevOps &amp; Cloud)</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  :root { --ink:#17243a; --muted:#4a5468; --navy:#0B1B34; --blue:#2F5FD0; --amber:#FFAA33; --line:#dfe3ea; --soft:#f4f6fa; --ok:#1d7a46; --bad:#b42318; }
+  * { box-sizing: border-box; }
+  body { font: 10.5pt/1.5 "Segoe UI", system-ui, Arial, sans-serif; color: var(--ink); margin: 0; }
+  a { color: var(--blue); text-decoration: none; word-break: break-all; }
+  h1, h2, h3 { line-height: 1.2; color: var(--navy); }
+  h2 { font-size: 16pt; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 3px solid var(--amber); }
+  h3 { font-size: 11.5pt; margin: 16px 0 6px; }
+  section { break-before: page; }
+  .nobreak { break-inside: avoid; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 9.5pt; }
+  th, td { border: 1px solid var(--line); padding: 5px 7px; vertical-align: top; text-align: left; }
+  th { background: var(--soft); }
+  code, pre { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.8pt; }
+  pre { background: #0f1b2e; color: #e6edf7; padding: 9px 11px; border-radius: 6px; white-space: pre-wrap; word-break: break-word; margin: 6px 0 10px; }
+  .pts { float: right; background: var(--navy); color: #fff; font-size: 9pt; padding: 2px 9px; border-radius: 10px; font-weight: 600; }
+  .ok { color: var(--ok); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; }
+  .note { border-left: 3px solid var(--amber); background: #fff8eb; padding: 7px 10px; font-size: 9.5pt; margin: 8px 0; }
+  figure { margin: 8px 0 12px; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid var(--line); border-radius: 4px; }
+  figure.narrow img { width: auto; max-width: 100%; max-height: 120mm; display: block; margin: 0 auto; }
+  figcaption { font-size: 8.8pt; color: var(--muted); margin-top: 3px; }
+  .ph { border: 2px dashed #c4cad6; border-radius: 6px; padding: 18px 12px; text-align: center; color: var(--muted); font-size: 9.5pt; background: var(--soft); }
+  .ph b { color: var(--ink); }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .grid3 figure img { max-height: 105mm; object-fit: contain; }
+  /* capa */
+  .cover { height: 263mm; display: flex; flex-direction: column; justify-content: space-between; }
+  .cover .band { background: var(--navy); color: #fff; border-radius: 0 0 22px 22px; padding: 34px 30px 30px; }
+  .cover .brand { font-size: 40pt; font-weight: 800; letter-spacing: -2px; }
+  .cover .brand span { color: var(--amber); }
+  .cover .eyebrow { color: #9DB8F5; font-size: 9pt; letter-spacing: 2px; font-weight: 700; text-transform: uppercase; }
+  .cover h1 { color: #fff; font-size: 22pt; margin: 14px 0 6px; }
+  .cover .sub { color: #D7DCE9; font-size: 11pt; }
+  .cover .meta { padding: 0 6px; }
+  .cover .links td:first-child { width: 34%; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ================= CAPA ================= -->
+<div class="cover">
+  <div class="band">
+    <div class="eyebrow">FIAP · Global Solution 2026.2 · CitizenTech · Engenharia de Software 4º ano</div>
+    <div class="brand">belka<span>●</span></div>
+    <h1>Deploy Blindado — MVP em produção com DevSecOps</h1>
+    <div class="sub">Secure DevOps Tools &amp; Cloud Computing · Componente: Produção · Prof. Gabriel Henrique Boyczuk Arcanjo</div>
+  </div>
+  <div class="meta">
+    <h3>Integrantes</h3>
+    <table>
+      <tr><th>Nome</th><th>RM</th></tr>
+      <tr><td>Fernanda Kaory Saito</td><td>RM 551104</td></tr>
+      <tr><td>João Pedro Borsato</td><td>RM 550294</td></tr>
+      <tr><td>Maria Fernanda Camargo</td><td>RM 97956</td></tr>
+      <tr><td>Pedro Lucas Nunes</td><td>RM 550366</td></tr>
+    </table>
+    <h3>Links da entrega</h3>
+    <table class="links">
+      <tr><td>MVP publicado (URL pública)</td><td><a href="{{URL}}">{{URL}}</a></td></tr>
+      <tr><td>Repositório público</td><td><a href="{{REPO}}">{{REPO}}</a></td></tr>
+      <tr><td>README (Ficha Técnica)</td><td><a href="{{REPO}}#ficha-técnica-do-mvp">{{REPO}}#ficha-técnica-do-mvp</a></td></tr>
+      <tr><td>Dockerfile · docker-compose</td><td><a href="{{REPO}}/blob/main/Dockerfile">Dockerfile</a> · <a href="{{REPO}}/blob/main/ollama/Dockerfile">ollama/Dockerfile</a> · <a href="{{REPO}}/blob/main/docker-compose.yml">docker-compose.yml</a></td></tr>
+      <tr><td>Terraform (IaC)</td><td><a href="{{REPO}}/tree/main/infra">{{REPO}}/tree/main/infra</a></td></tr>
+      <tr><td>Workflow DevSecOps</td><td><a href="{{REPO}}/blob/main/.github/workflows/devsecops.yml">.github/workflows/devsecops.yml</a></td></tr>
+      <tr><td>Execuções do pipeline</td><td><a href="{{REPO}}/actions">{{REPO}}/actions</a></td></tr>
+      <tr><td>Execução barrada (Gitleaks)</td><td><a href="{{RUN_BLOCKED}}">{{RUN_BLOCKED}}</a></td></tr>
+      <tr><td>Execução corrigida (verde)</td><td><a href="{{RUN_FIXED}}">{{RUN_FIXED}}</a></td></tr>
+      <tr><td>Deploy em produção (main)</td><td><a href="{{RUN_DEPLOY}}">{{RUN_DEPLOY}}</a></td></tr>
+    </table>
+  </div>
+  <div style="font-size:8.5pt;color:#4a5468">Protótipo educativo. Os indicadores não são alertas oficiais e não substituem a Defesa Civil.</div>
+</div>
+
+<!-- ================= FICHA ================= -->
+<section>
+  <h2>1. Ficha Técnica do MVP</h2>
+  <table>
+    <tr><th style="width:27%">Nome do produto</th><td><b>Belka</b> — "Olhar longe. Proteger perto."</td></tr>
+    <tr><th>Cidadão e território</th><td>Moradores de municípios paulistas expostos a alagamentos, deslizamentos e calor extremo, inclusive com celulares de entrada e pouca conectividade. Piloto: São Paulo, Guarulhos, Campinas, Franco da Rocha e São Sebastião (SP).</td></tr>
+    <tr><th>Problema, em uma frase</th><td>Em eventos climáticos extremos, o cidadão não encontra em um só lugar uma informação clara sobre o risco no seu município nem uma orientação confiável sobre o que fazer.</td></tr>
+    <tr><th>Proposta de valor</th><td>App web leve e acessível que reúne indicadores de risco por município e um assistente de IA que orienta com base em fontes oficiais, citando a fonte e recusando quando não sabe — complementando a Defesa Civil.</td></tr>
+    <tr><th>Arquitetura: componentes</th><td>Front-end web mobile-first · API FastAPI · LLM local Ollama (qwen2.5:1.5b) com RAG e agente · camada Ouro no Databricks · Azure Container Apps · Application Insights · GitHub Actions</td></tr>
+    <tr><th>Fontes de dados</th><td>Open-Meteo Forecast/Flood API, IBGE (população), Defesa Civil Nacional e Ministério da Saúde (base de conhecimento), camada Ouro do Databricks</td></tr>
+    <tr><th>Modelos de IA</th><td>Qwen2.5-1.5B-Instruct via Ollama (RAG + agente com ferramenta de clima) e adaptador LoRA próprio</td></tr>
+    <tr><th>URL do MVP e repositório</th><td><a href="{{URL}}">{{URL}}</a><br><a href="{{REPO}}">{{REPO}}</a></td></tr>
+    <tr><th>Indicadores de impacto</th><td>Consultas e usuários ativos por município; % de respostas fundamentadas com citação e taxa de alucinação; disponibilidade e latência p95; nº de municípios monitorados</td></tr>
+    <tr><th>ODS conectados</th><td>ODS 11 (11.5), ODS 13 (13.1), ODS 3 (3.d)</td></tr>
+  </table>
+
+  <h3>MVP no ar</h3>
+  <div class="grid3">
+    <!--PRINT:01-mvp-inicio.png|Início (URL pública, celular)-->
+    <!--PRINT:02-mvp-monitoramento.png|Monitoramento por município-->
+    <!--PRINT:03-mvp-assistente.png|Assistente Belka AI-->
+  </div>
+</section>
+
+<!-- ================= ARQUITETURA ================= -->
+<section>
+  <h2>2. Arquitetura</h2>
+  <figure>
+    {{DIAGRAMA}}
+    <figcaption>Fluxo de entrega (GitHub Actions → GHCR → Terraform) e de execução (cidadão → API → proxy autenticado do LLM) na Azure, região Brazil South.</figcaption>
+  </figure>
+  <table>
+    <tr><th>Componente</th><th>Recurso</th><th>Exposição</th></tr>
+    <tr><td>API + front-end</td><td>Container App <code>belka-api</code> · 0,5 vCPU / 1 GiB · 1–3 réplicas</td><td>HTTPS público (TLS gerenciado); HTTP → 301 HTTPS</td></tr>
+    <tr><td>LLM</td><td>Container App <code>belka-ollama</code> · 2 vCPU / 4 GiB · 0–1 réplica (escala a zero)</td><td>HTTPS com <b>Bearer token obrigatório</b> (proxy Caddy → 401 sem token); Ollama escuta só em 127.0.0.1</td></tr>
+    <tr><td>Observabilidade</td><td>Application Insights + Log Analytics (30 dias, teto 1 GB/dia), Workbook, 2 alertas, Action Group</td><td>Portal Azure (RBAC)</td></tr>
+    <tr><td>Imagens</td><td>GitHub Container Registry (<code>belka-api</code>, <code>belka-ollama</code>)</td><td>Públicas (código aberto)</td></tr>
+    <tr><td>State do Terraform</td><td>Storage Account <code>stbelkatf…</code> (versionamento, TLS 1.2, sem chave compartilhada, sem blob público)</td><td>Somente Entra ID</td></tr>
+    <tr><td>Identidade de deploy</td><td>Managed Identity <code>id-belka-github</code> com credencial federada (OIDC)</td><td>Contributor só em <code>rg-belka</code></td></tr>
+  </table>
+  <h3>Decisão de arquitetura: LLM atrás de proxy com token</h3>
+  <p>O desenho original previa o LLM com ingress <b>interno</b>. A assinatura Azure for Students, porém, só recebe ambientes Container Apps no modo <b>Express</b>, que não tem descoberta de serviços internos (apps conversam pela URL pública). Testamos criar um ambiente Standard em todas as regiões permitidas pela política da assinatura e a Azure recusou em todas:</p>
+  <pre>brazilsouth, chilecentral, northcentralus, spaincentral, belgiumcentral:
+ManagedEnvironmentModeNotSupported: The managed environment mode Standard is not currently available in this region.</pre>
+  <p>Solução adotada, mantendo os dados no Brasil: o Ollama (que não tem autenticação) escuta só em <code>127.0.0.1</code> dentro do container, e um proxy <b>Caddy</b> na porta 8080 exige <code>Authorization: Bearer &lt;token&gt;</code>, respondendo <b>401</b> a qualquer outra chamada. O token (48 caracteres aleatórios) é gerado pelo Terraform (<code>random_password</code>), entregue aos dois apps como <i>secret</i> do Container Apps e nunca aparece no código, na imagem ou no GitHub. O container recusa iniciar se o token tiver menos de 32 caracteres.</p>
+  <pre>{{EVID_PROXY}}</pre>
+</section>
+
+<!-- ================= CONTAINER E IAC ================= -->
+<section>
+  <h2>3. Container e IaC <span class="pts">5,0 pts</span></h2>
+  <h3>Dockerfile enxuto, não root, sem segredo — e stack com docker compose (2,0)</h3>
+  <table>
+    <tr><th style="width:38%">Requisito</th><th>Como foi atendido</th></tr>
+    <tr><td>Imagem enxuta</td><td>Multi-stage sobre <code>python:3.12-slim</code>; só o venv, <code>app/</code> e <code>base/</code> vão para a imagem final (~111 MB). <code>.dockerignore</code> exclui <code>.venv</code>, <code>.env</code>, <code>.git</code>, IaC e o adaptador LoRA.</td></tr>
+    <tr><td>Usuário não root</td><td><code>useradd --uid 10001 --shell nologin</code> + <code>USER 10001</code> (API e Ollama). Código pertence ao root e é somente leitura.</td></tr>
+    <tr><td>Sem segredo na imagem</td><td>Nenhum <code>ENV</code>/<code>ARG</code> com credencial; tudo entra em tempo de execução (secrets do Container Apps). Gitleaks varre o repositório a cada push.</td></tr>
+    <tr><td>Patches de SO</td><td><code>apt-get upgrade</code> na imagem final — adicionado após o Trivy barrar 2 CVEs HIGH no <code>zlib1g</code>.</td></tr>
+    <tr><td>docker compose</td><td><code>api</code> + <code>ollama</code> (modelo embutido), healthchecks, <code>read_only</code>, <code>cap_drop: ALL</code>, <code>no-new-privileges</code>; o LLM não publica porta no host.</td></tr>
+  </table>
+  <pre>$ docker image inspect belka-api:local --format 'user={{.Config.User}} size={{.Size}}'
+user=10001 size=111009896</pre>
+  <!--PRINT:04-docker-compose.png|docker compose up — API e Ollama saudáveis e app em localhost:8000-->
+
+  <h3>Nuvem criada por Terraform, state e .tfvars fora do repo, porta admin fechada (3,0)</h3>
+  <table>
+    <tr><th style="width:38%">Requisito</th><th>Como foi atendido</th></tr>
+    <tr><td>Infra como código</td><td><a href="{{REPO}}/tree/main/infra">infra/</a>: Log Analytics, App Insights, Container Apps Environment, 2 Container Apps, Action Group, 2 alertas de métrica e Workbook. Aplicado pelo pipeline (<code>plan</code> → <code>apply</code>).</td></tr>
+    <tr><td>State fora do repositório</td><td>Backend <code>azurerm</code> no Storage <code>rg-belka-tfstate</code>, autenticação Entra ID (OIDC), versionamento de blobs e lock nativo.</td></tr>
+    <tr><td>.tfvars fora do repositório</td><td><code>*.tfvars</code>, <code>*.tfstate*</code> e <code>.terraform/</code> no <code>.gitignore</code>; versionado só <code>terraform.tfvars.example</code>. No CI, valores chegam por <code>TF_VAR_*</code> a partir de GitHub Secrets.</td></tr>
+    <tr><td>Porta admin nunca aberta a 0.0.0.0/0</td><td>Não existe VM, SSH nem RDP: Container Apps é PaaS. As únicas entradas são HTTPS 443 (TLS gerenciado): a API pública e o proxy do LLM, que exige token; o Storage do state não aceita chave compartilhada nem acesso anônimo.</td></tr>
+    <tr><td>Menor privilégio</td><td>A identidade do pipeline tem Contributor apenas em <code>rg-belka</code> e Storage Blob Data Contributor apenas no Storage do state.</td></tr>
+  </table>
+  <pre>{{EVID_INGRESS}}</pre>
+  <!--PRINT:05-terraform-apply.png|terraform apply executado pelo GitHub Actions-->
+  <!--PRINT:06-azure-recursos.png|Recursos do rg-belka no portal Azure-->
+  <!--PRINT:07-tfstate.png|Blob belka.tfstate no Storage Account (state remoto)-->
+</section>
+
+<!-- ================= PIPELINE ================= -->
+<section>
+  <h2>4. Pipeline DevSecOps <span class="pts">4,0 pts</span></h2>
+  <p>Workflow <a href="{{REPO}}/blob/main/.github/workflows/devsecops.yml">devsecops.yml</a>, disparado em <b>todo push</b> e pull request. Deploy apenas na <code>main</code>, no Environment <code>production</code>.</p>
+  <table>
+    <tr><th>Etapa</th><th>Ferramenta</th><th>Barra o pipeline quando…</th></tr>
+    <tr><td>1. Segredos</td><td>Gitleaks (histórico completo)</td><td>encontra credencial em qualquer commit</td></tr>
+    <tr><td>2. SAST</td><td>Semgrep (<code>p/python</code>, <code>p/dockerfile</code>, <code>p/terraform</code>)</td><td>há achado nas regras</td></tr>
+    <tr><td>3. Build</td><td>Docker</td><td>a imagem não compila</td></tr>
+    <tr><td>4. Vulnerabilidades</td><td>Trivy imagem (SO + bibliotecas) e Trivy config (Dockerfile/Terraform)</td><td>CVE HIGH/CRITICAL com correção disponível, ou má configuração HIGH/CRITICAL</td></tr>
+    <tr><td>5. Publicação</td><td>GHCR (tag = SHA do commit)</td><td>—</td></tr>
+    <tr><td>6. Deploy</td><td>Terraform <code>fmt</code> → <code>validate</code> → <code>plan</code> → <code>apply</code>, login OIDC</td><td>formatação, validação ou apply falham</td></tr>
+    <tr><td>7. Teste de fumaça</td><td><code>curl /health</code> na URL publicada</td><td>a API não responde</td></tr>
+  </table>
+  <h3>Segredos em GitHub Secrets</h3>
+  <p><code>AZURE_CLIENT_ID</code>, <code>AZURE_TENANT_ID</code>, <code>AZURE_SUBSCRIPTION_ID</code>, <code>ALERT_EMAIL</code> (e, opcionalmente, <code>DATABRICKS_*</code>). O login na Azure usa <b>OIDC</b>: não há senha de service principal guardada em lugar nenhum. Nomes não sensíveis (resource groups, storage do state) ficam em GitHub Variables.</p>
+  <!--PRINT:08-github-secrets.png|Settings › Secrets and variables › Actions (somente nomes)-->
+
+  <h3>Execução barrada → corrigida</h3>
+  <p><span class="bad">Barrada:</span> commit com credencial AWS falsa na branch <code>demo/segredo-vazado</code>. O Gitleaks detectou <code>aws-access-token</code> e <code>generic-api-key</code>; build e deploy nem executaram. <a href="{{RUN_BLOCKED}}">{{RUN_BLOCKED}}</a></p>
+  <pre>RuleID: aws-access-token   File: app/config_demo.py   Line: 2
+RuleID: generic-api-key    File: app/config_demo.py   Line: 3
+WRN leaks found: 2
+Gitleaks: failure · Semgrep: success · Build + Trivy: skipped · Deploy: skipped</pre>
+  <!--PRINT:09-pipeline-barrado.png|Execução barrada pelo Gitleaks-->
+  <p><span class="ok">Corrigida:</span> credencial removida e histórico da branch reescrito; o pipeline volta a passar. <a href="{{RUN_FIXED}}">{{RUN_FIXED}}</a></p>
+  <!--PRINT:10-pipeline-corrigido.png|Mesma branch após a correção: todos os jobs verdes-->
+  <div class="note">Também barrado durante o desenvolvimento: o <b>Trivy</b> reprovou a imagem por 2 CVEs HIGH no <code>zlib1g</code> da base Debian; a correção foi aplicar <code>apt-get upgrade</code> no Dockerfile (resultado: 0 HIGH/CRITICAL).</div>
+  <!--PRINT:11-pipeline-main.png|Execução na main com deploy automático e teste de fumaça-->
+</section>
+
+<!-- ================= OBSERVABILIDADE ================= -->
+<section>
+  <h2>5. Observabilidade <span class="pts">3,0 pts</span></h2>
+  <p>A API é instrumentada com <b>Azure Monitor OpenTelemetry</b> (requisições, dependências, exceções). O dashboard é o Workbook <b>"Belka - Sinais de Ouro"</b>, criado pelo Terraform (<a href="{{REPO}}/blob/main/infra/monitoring.tf">monitoring.tf</a>).</p>
+  <table>
+    <tr><th>Sinal de ouro</th><th>Consulta / métrica</th></tr>
+    <tr><td>Latência</td><td><code>requests | percentile(duration, 50/95)</code> a cada 5 min</td></tr>
+    <tr><td>Tráfego</td><td><code>requests | count()</code> por rota a cada 5 min</td></tr>
+    <tr><td>Erros</td><td><code>countif(success == false)</code> e taxa de erro %</td></tr>
+    <tr><td>Saturação</td><td>Métricas do Container App: <code>UsageNanoCores</code> (CPU) e <code>WorkingSetBytes</code> (memória)</td></tr>
+  </table>
+  <!--PRINT:12-workbook.png|Workbook "Belka - Sinais de Ouro" com os 4 sinais-->
+  <h3>Alertas</h3>
+  <table>
+    <tr><th>Alerta</th><th>Condição</th><th>Ação</th></tr>
+    <tr><td><code>alerta-belka-erros-5xx</code> (sev 1)</td><td><code>requests/failed</code> &gt; 3 em 5 min</td><td>E-mail para a equipe</td></tr>
+    <tr><td><code>alerta-belka-cpu</code> (sev 2)</td><td>CPU média &gt; 0,4 vCPU em 5 min</td><td>E-mail para a equipe</td></tr>
+  </table>
+  <p><b>Disparo real:</b> {{EVID_ALERTA}}</p>
+  <!--PRINT:13-alerta-disparado.png|Alerta em estado Fired no Azure Monitor-->
+  <!--PRINT:14-alerta-email.png|E-mail de alerta recebido-->
+</section>
+
+<!-- ================= RESPONSABILIDADE / LGPD ================= -->
+<section>
+  <h2>6. Responsabilidade compartilhada <span class="pts">Documentação 2,0</span></h2>
+  <p>Modelo PaaS (Azure Container Apps):</p>
+  <table>
+    <tr><th>Camada</th><th>Azure</th><th>Equipe Belka</th></tr>
+    <tr><td>Datacenter, rede física, hardware</td><td>✔</td><td></td></tr>
+    <tr><td>Hypervisor, SO dos hosts, orquestração do Container Apps</td><td>✔</td><td></td></tr>
+    <tr><td>Certificado TLS e ingress</td><td>emite e renova</td><td>configura (HTTPS obrigatório, LLM com token)</td></tr>
+    <tr><td>Imagem do container (SO base e bibliotecas)</td><td></td><td>✔ Trivy a cada push, base slim, não root</td></tr>
+    <tr><td>Código da aplicação</td><td></td><td>✔ Semgrep, revisão</td></tr>
+    <tr><td>Segredos</td><td>armazenamento cifrado dos secrets</td><td>✔ GitHub Secrets, OIDC, Gitleaks</td></tr>
+    <tr><td>Identidade e acesso</td><td>Entra ID</td><td>✔ menor privilégio por resource group</td></tr>
+    <tr><td>Dados pessoais (LGPD)</td><td>criptografia em repouso</td><td>✔ minimização, retenção, transparência</td></tr>
+    <tr><td>Monitoramento e resposta</td><td>coleta de métricas da plataforma</td><td>✔ dashboard, alertas, ação</td></tr>
+  </table>
+
+  <h2 style="margin-top:22px">7. LGPD — onde ficam os dados pessoais</h2>
+  <table>
+    <tr><th>Dado</th><th>Pessoal?</th><th>Onde fica</th><th>Tratamento</th></tr>
+    <tr><td>Texto da pergunta</td><td>Pode conter</td><td>Memória do container durante a requisição</td><td>Não é gravado em log nem enviado à telemetria</td></tr>
+    <tr><td>Latitude/longitude (<code>/api/clima</code>)</td><td>Sim</td><td>Memória; enviado ao Open-Meteo</td><td>Arredondado a 2 casas (~1 km); query string removida de toda telemetria; log de acesso do servidor desligado</td></tr>
+    <tr><td>IP do cidadão</td><td>Sim</td><td>Application Insights</td><td>Mascarado (0.0.0.0) — <code>ip_masking_enabled = true</code></td></tr>
+    <tr><td>Telemetria (rota, duração, status)</td><td>Não</td><td>Log Analytics, Brazil South</td><td>Retenção de 30 dias, teto de 1 GB/dia</td></tr>
+    <tr><td>Risco por município (Databricks Ouro)</td><td>Não (agregado)</td><td>Databricks</td><td>Somente leitura</td></tr>
+    <tr><td>Assinantes (view LGPD simulada)</td><td>Sim</td><td>Não consultada em produção</td><td>—</td></tr>
+  </table>
+  <p>Todos os recursos ficam na região <b>Brazil South</b> (sem transferência internacional dos dados da plataforma). Credenciais nunca ficam no código, na imagem ou no HTML.</p>
+</section>
+
+<!-- ================= CUSTO ================= -->
+<section>
+  <h2>8. Estimativa de custo</h2>
+  <p>Assinatura <b>Azure for Students</b> (crédito de US$ 100). Valores mensais de referência pay-as-you-go para uso de demonstração; confirmados na Calculadora de Preços da Azure (print abaixo).</p>
+  <table>
+    <tr><th>Recurso</th><th>Configuração</th><th>US$/mês (est.)</th></tr>
+    <tr><td>Container App <code>belka-api</code></td><td>0,5 vCPU / 1 GiB, 1 réplica mínima, majoritariamente ociosa; parte coberta pela cota gratuita mensal (180.000 vCPU-s, 360.000 GiB-s, 2 milhões de requisições)</td><td>5 – 10</td></tr>
+    <tr><td>Container App <code>belka-ollama</code></td><td>2 vCPU / 4 GiB, escala a zero, ~1 h/dia ativo</td><td>5 – 8</td></tr>
+    <tr><td>Log Analytics + Application Insights</td><td>&lt; 5 GB/mês de ingestão</td><td>0</td></tr>
+    <tr><td>Storage do state</td><td>&lt; 1 MB, LRS</td><td>&lt; 0,10</td></tr>
+    <tr><td>2 alertas de métrica + e-mail</td><td></td><td>~0,20</td></tr>
+    <tr><td>GHCR</td><td>pacotes públicos</td><td>0</td></tr>
+    <tr><th colspan="2">Total estimado</th><th>≈ 10 – 20</th></tr>
+  </table>
+  <div class="note">Com o LLM sempre ligado (1 réplica 24×7) o custo subiria para ~US$ 130/mês só no <code>belka-ollama</code>; por isso ele escala a zero e só fica com 1 réplica fixa durante a avaliação. Após a avaliação, <code>terraform destroy</code> remove tudo.</div>
+  <!--PRINT:15-calculadora.png|Estimativa na Calculadora de Preços da Azure-->
+  <!--PRINT:16-custo-real.png|Cost Management — custo acumulado real da assinatura-->
+
+  <h2 style="margin-top:22px">9. Reprodutibilidade</h2>
+  <p>O <a href="{{REPO}}#readme">README</a> traz o passo a passo completo: rodar local com <code>docker compose up --build</code>; criar a base da nuvem com <code>infra/bootstrap.sh</code> (resource groups, state remoto, identidade OIDC); cadastrar Secrets/Variables; e publicar com um <code>git push</code> na <code>main</code>.</p>
+  <h3>Limitações conhecidas</h3>
+  <ul>
+    <li>LLM em CPU: respostas de 10–30 s; a primeira após inatividade pode levar 1–2 min (escala a zero). O modo demo do assistente não depende do LLM.</li>
+    <li>Modos LoRA não estão na imagem de produção (dependem de PyTorch); a API responde 503 com mensagem clara.</li>
+    <li>Sem credenciais do Databricks, o dashboard usa o snapshot histórico documentado.</li>
+  </ul>
+</section>
+
+</body>
+</html>

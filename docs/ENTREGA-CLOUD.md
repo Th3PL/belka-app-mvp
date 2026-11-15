@@ -21,7 +21,7 @@ flowchart LR
   subgraph AZ[Azure — rg-belka - brazilsouth]
     subgraph CAE[Container Apps Environment]
       api[belka-api<br/>FastAPI · HTTPS público<br/>0.5 vCPU / 1 GiB]
-      llm[belka-ollama<br/>qwen2.5:1.5b · ingress interno<br/>2 vCPU / 4 GiB · escala a zero]
+      llm[belka-ollama<br/>qwen2.5:1.5b + proxy Caddy<br/>Bearer token obrigatório · escala a zero]
     end
     appi[Application Insights]
     law[Log Analytics]
@@ -37,7 +37,7 @@ flowchart LR
   tf -.state.-> sa
   ghcr --> CAE
   cid[Cidadão no celular] -- HTTPS --> api
-  api -- http interno --> llm
+  api -- HTTPS + Bearer token --> llm
   api -- HTTPS --> om[Open-Meteo]
   api -- HTTPS --> dbx[Databricks SQL camada Ouro]
   api -- telemetria sem query --> appi --> law
@@ -51,7 +51,7 @@ flowchart LR
 | Stack com docker compose | [`docker-compose.yml`](../docker-compose.yml) |
 | Nuvem criada por Terraform | [`infra/`](../infra) |
 | State e .tfvars fora do repo | backend `azurerm` em Storage Account; `*.tfvars` e `*.tfstate` no [`.gitignore`](../.gitignore) |
-| Porta admin nunca aberta a 0.0.0.0/0 | Não há VM, SSH nem RDP: Container Apps é PaaS. Única entrada pública: HTTPS 443 da API. LLM com ingress interno. Storage do state sem acesso público a blobs e sem chave compartilhada |
+| Porta admin nunca aberta a 0.0.0.0/0 | Não há VM, SSH nem RDP: Container Apps é PaaS. Entradas só por HTTPS 443 (TLS gerenciado): a API e o proxy do LLM, que devolve 401 sem token (ver decisão abaixo). Storage do state sem acesso público a blobs e sem chave compartilhada |
 | GitHub Actions com build, Gitleaks, Semgrep, Trivy a cada push | [`.github/workflows/devsecops.yml`](../.github/workflows/devsecops.yml) (`on: push`) |
 | Segredos em GitHub Secrets | `AZURE_*`, `ALERT_EMAIL`, `DATABRICKS_*` |
 | Deploy automático | job `deploy` na `main` → `terraform apply` com a imagem do commit |
@@ -149,4 +149,14 @@ Com `OLLAMA_MIN_REPLICAS=1` 24×7, o LLM sozinho custaria ~US$ 130/mês: manter 
 - [ ] MVP aberto na URL pública (celular)
 - [ ] Workbook com os 4 sinais de ouro
 - [ ] Alerta *Fired* + e-mail recebido
-- [ ] Ingress do `belka-ollama` = interno (Container App → Ingress)
+- [ ] `curl` no `belka-ollama` sem token → 401
+
+## 8. Decisão de arquitetura: LLM atrás de proxy com token
+
+O plano original era deixar o `belka-ollama` com ingress **interno**. A assinatura Azure for Students só recebe ambientes Container Apps **Express**, que não têm descoberta de serviços internos: apps conversam pela URL pública. Tentamos criar um ambiente Standard em todas as regiões permitidas pela política da assinatura (brazilsouth, chilecentral, northcentralus, spaincentral, belgiumcentral), e todas recusaram com `ManagedEnvironmentModeNotSupported`.
+
+Solução, mantendo os dados no Brasil:
+- O Ollama (sem autenticação própria) escuta só em `127.0.0.1:11434` dentro do container.
+- Um proxy **Caddy** ([`ollama/Caddyfile`](../ollama/Caddyfile)) na porta 8080 exige `Authorization: Bearer <token>` e responde **401** a qualquer outra chamada.
+- O token tem 48 caracteres, é gerado pelo Terraform (`random_password`) e vai para os dois apps como *secret*. O container ([`ollama/start.sh`](../ollama/start.sh)) não sobe com token ausente ou curto.
+- A comunicação é HTTPS com certificado gerenciado pela Azure.

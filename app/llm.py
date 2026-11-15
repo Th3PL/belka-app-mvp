@@ -41,8 +41,12 @@ async def ollama_generate(system: str, user: str):
         ]
     }
 
+    # Token do proxy de autenticação na frente do Ollama (produção e compose).
+    api_key = os.getenv("OLLAMA_API_KEY")
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+
     async with httpx.AsyncClient(timeout=120) as client:
-        response = await client.post(url, json=payload)
+        response = await client.post(url, json=payload, headers=headers)
         response.raise_for_status()
 
         data = response.json()
