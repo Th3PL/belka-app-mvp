@@ -76,11 +76,8 @@ resource "azurerm_container_app" "ollama" {
 
   ingress {
     external_enabled = false
-    # HTTP só dentro do ambiente (ingress interno, sem acesso da internet);
-    # sem isso a chamada http://belka-ollama recebe 301 para HTTPS e o cliente falha.
-    allow_insecure_connections = true
-    target_port                = 11434
-    transport                  = "http"
+    target_port      = 11434
+    transport        = "http"
     traffic_weight {
       latest_revision = true
       percentage      = 100
@@ -121,7 +118,9 @@ resource "azurerm_container_app" "api" {
 
       env {
         name  = "OLLAMA_URL"
-        value = "http://${azurerm_container_app.ollama.name}" # DNS interno do ambiente
+        # FQDN do ingress INTERNO (só resolve/aceita dentro do ambiente), com TLS gerenciado.
+        # http:// recebe 301 para HTTPS e ambientes "express" não permitem allowInsecure.
+        value = "https://${azurerm_container_app.ollama.ingress[0].fqdn}"
       }
       env {
         name  = "OLLAMA_MODEL"
