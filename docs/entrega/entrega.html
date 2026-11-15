@@ -323,7 +323,8 @@ alerta-belka-erros-5xx  Sev1          Fired       New       2026-11-15T18:51:32.
 alerta-belka-erros-5xx  Sev1          Resolved    New       2026-11-15T18:15:33.3912818Z
 alerta-belka-erros-5xx  Sev1          Resolved    New       2026-11-15T18:10:36.4158061Z</p>
 <figure><img src="prints/13-alerta-disparado.png" alt="Alerta em estado Fired no Azure Monitor"><figcaption>Alerta em estado Fired no Azure Monitor</figcaption></figure>
-<div class="ph"><b>PRINT PENDENTE</b> — E-mail de alerta recebido<br><code>docs/entrega/prints/14-alerta-email.png</code></div>
+<figure><img src="prints/14-alerta-email.png" alt="E-mail "Fired: Sev1 alerta-belka-erros-5xx" recebido pela equipe"><figcaption>E-mail "Fired: Sev1 alerta-belka-erros-5xx" recebido pela equipe</figcaption></figure>
+<figure><img src="prints/14b-actiongroup-email.png" alt="Confirmação do Azure Monitor: e-mail cadastrado no Action Group belkaops"><figcaption>Confirmação do Azure Monitor: e-mail cadastrado no Action Group belkaops</figcaption></figure>
 </section>
 
 <!-- ================= RESPONSABILIDADE / LGPD ================= -->
@@ -359,20 +360,19 @@ alerta-belka-erros-5xx  Sev1          Resolved    New       2026-11-15T18:10:36.
 <!-- ================= CUSTO ================= -->
 <section>
   <h2>8. Estimativa de custo</h2>
-  <p>Assinatura <b>Azure for Students</b> (crédito de US$ 100). Valores mensais de referência pay-as-you-go para uso de demonstração; confirmados na Calculadora de Preços da Azure (print abaixo).</p>
+  <p>Assinatura <b>Azure for Students</b>. Estimativa feita na Calculadora de Preços da Azure, região Brazil South, pago conforme o uso: <a href="https://azure.com/e/c2f1571ae006489fa4094674da8ad8d8">https://azure.com/e/c2f1571ae006489fa4094674da8ad8d8</a></p>
   <table>
-    <tr><th>Recurso</th><th>Configuração</th><th>US$/mês (est.)</th></tr>
-    <tr><td>Container App <code>belka-api</code></td><td>0,5 vCPU / 1 GiB, 1 réplica mínima, majoritariamente ociosa; parte coberta pela cota gratuita mensal (180.000 vCPU-s, 360.000 GiB-s, 2 milhões de requisições)</td><td>5 – 10</td></tr>
-    <tr><td>Container App <code>belka-ollama</code></td><td>2 vCPU / 4 GiB, escala a zero, ~1 h/dia ativo</td><td>5 – 8</td></tr>
-    <tr><td>Log Analytics + Application Insights</td><td>&lt; 5 GB/mês de ingestão</td><td>0</td></tr>
-    <tr><td>Storage do state</td><td>&lt; 1 MB, LRS</td><td>&lt; 0,10</td></tr>
-    <tr><td>2 alertas de métrica + e-mail</td><td></td><td>~0,20</td></tr>
-    <tr><td>GHCR</td><td>pacotes públicos</td><td>0</td></tr>
-    <tr><th colspan="2">Total estimado</th><th>≈ 10 – 20</th></tr>
+    <tr><th>Recurso</th><th>Configuração na calculadora</th><th>US$/mês</th></tr>
+    <tr><td>Container App <code>belka-api</code></td><td>Consumo · 0,5 vCPU / 1 GiB · 1 réplica mínima (ociosa com desconto) · 0,1 milhão de requisições (dentro dos 2 milhões gratuitos)</td><td>7,88</td></tr>
+    <tr><td>Container App <code>belka-ollama</code></td><td>Consumo · 2 vCPU / 4 GiB · escala a zero; uso ativo dentro da cota gratuita mensal (180.000 vCPU-s e 360.000 GiB-s)</td><td>0,00</td></tr>
+    <tr><td>Azure Monitor</td><td>Log Analytics + Application Insights (&lt; 5 GB/mês gratuitos), 2 regras de alerta, e-mail</td><td>0,00</td></tr>
+    <tr><td>Contas de armazenamento (state)</td><td>Blob · Uso geral V2 · LRS · Quente · <b>1.000 GB</b> — teto conservador; o state real tem 34 KB e custa centavos</td><td>34,06</td></tr>
+    <tr><td>GHCR (imagens)</td><td>Pacotes públicos no GitHub, fora da Azure</td><td>0,00</td></tr>
+    <tr><th colspan="2">Custo mensal estimado (calculadora)</th><th>41,95</th></tr>
+    <tr><th colspan="2">Custo anual estimado</th><th>503,35</th></tr>
   </table>
-  <div class="note">Com o LLM sempre ligado (1 réplica 24×7) o custo subiria para ~US$ 130/mês só no <code>belka-ollama</code>; por isso ele escala a zero e só fica com 1 réplica fixa durante a avaliação. Após a avaliação, <code>terraform destroy</code> remove tudo.</div>
-<div class="ph"><b>PRINT PENDENTE</b> — Estimativa na Calculadora de Preços da Azure<br><code>docs/entrega/prints/15-calculadora.png</code></div>
-<div class="ph"><b>PRINT PENDENTE</b> — Saldo do crédito Azure for Students (microsoftazuresponsorships.com) — a API de Cost Management não está disponível para essa assinatura<br><code>docs/entrega/prints/16-custo-real.png</code></div>
+  <div class="note"><b>Leitura da estimativa:</b> o valor da calculadora é um teto. Quase todo o custo vem do armazenamento dimensionado em 1 TB; com o tamanho real do state (KB), o total cai para <b>≈ US$ 8/mês</b>, dominado pela réplica mínima da API. Com o LLM sempre ligado (1 réplica 24×7) o <code>belka-ollama</code> sozinho custaria ~US$ 130/mês — por isso ele escala a zero e só fica com réplica fixa durante a avaliação. Após a avaliação, <code>terraform destroy</code> remove tudo.<br><b>Custo real:</b> assinaturas Azure for Students não expõem a API de Cost Management (<code>GetAzureSubscriptionsById returns null</code>) nem o portal de patrocínios ("This account does not have an active Sponsorship"); o acompanhamento real é feito pelo saldo de créditos no portal da Azure.</div>
+<figure><img src="prints/15-calculadora.png" alt="Resumo da estimativa na Calculadora de Preços da Azure (Brazil South)"><figcaption>Resumo da estimativa na Calculadora de Preços da Azure (Brazil South)</figcaption></figure>
 
   <h2 style="margin-top:22px">9. Reprodutibilidade</h2>
   <p>O <a href="https://github.com/Th3PL/belka-app-mvp#readme">README</a> traz o passo a passo completo: rodar local com <code>docker compose up --build</code>; criar a base da nuvem com <code>infra/bootstrap.sh</code> (resource groups, state remoto, identidade OIDC); cadastrar Secrets/Variables; e publicar com um <code>git push</code> na <code>main</code>.</p>

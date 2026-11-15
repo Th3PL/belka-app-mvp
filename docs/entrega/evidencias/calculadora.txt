@@ -1,0 +1,13 @@
+# Calculadora de Preços da Azure — estimativa compartilhada pela equipe
+# https://azure.com/e/c2f1571ae006489fa4094674da8ad8d8   (Brazil South · USD · pago conforme o uso)
+
+Item                                           Configuração                                                   US$/mês
+---------------------------------------------  -------------------------------------------------------------  -------
+Aplicativos de Contêiner do Azure: belka-api    Consumo · 0,5 vCPU / 1 GiB · 1 réplica mínima · 0,1 mi req       7,88
+Aplicativos de Contêiner do Azure: belka-ollama Consumo · 2 vCPU / 4 GiB · escala a zero (cota gratuita)            0,00
+Azure Monitor                                   Log Analytics + Application Insights + alertas (cota gratuita)    0,00
+Contas de armazenamento (state do Terraform)    Blob · Uso geral V2 · LRS · Quente · 1.000 GB (teto conservador)  34,06
+                                                                                                         -------
+Custo mensal estimado                                                                                      41,95
+Custo anual estimado                                                                                      503,35
+Custo adiantado                                                                                             0,00

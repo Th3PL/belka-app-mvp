@@ -135,7 +135,7 @@ Valores de referência da tabela pay-as-you-go; confirmar na [Calculadora de Pre
 | Storage do state | < 1 MB, LRS | < 0,10 |
 | Alertas (2 regras de métrica) + e-mail | | ~0,20 |
 | GHCR (pacotes públicos) | | 0 |
-| **Total** | | **≈ US$ 10–20/mês**, dentro do crédito Azure for Students (US$ 100) |
+| **Total (calculadora)** | [estimativa compartilhada](https://azure.com/e/c2f1571ae006489fa4094674da8ad8d8) | **US$ 41,95/mês** (teto: storage dimensionado em 1 TB; com o state real ≈ US$ 8/mês) |
 
 Com `OLLAMA_MIN_REPLICAS=1` 24×7, o LLM sozinho custaria ~US$ 130/mês: manter em 1 só no período de avaliação.
 
