@@ -1,0 +1,20 @@
+# GitHub Actions · run 43747965034 · job Deploy (Terraform -> Azure Container Apps)
+$ terraform init   # backend azurerm (state remoto), login OIDC
+Successfully configured the backend "azurerm"! Terraform will automatically
+Terraform has been successfully initialized!
+$ terraform fmt -check && terraform validate
+Success! The configuration is valid.
+$ terraform plan -out=tfplan
+# azurerm_container_app.api will be updated in-place
+# azurerm_container_app.ollama will be updated in-place
+# azurerm_container_app_environment.main will be updated in-place
+# random_password.ollama_api_key will be created
+Plan: 1 to add, 3 to change, 0 to destroy.
+$ terraform apply -auto-approve tfplan
+random_password.ollama_api_key: Creation complete after 0s [id=none]
+azurerm_container_app_environment.main: Modifications complete after 16s [id=.../cae-belka]
+azurerm_container_app.ollama: Modifications complete after 3m31s [id=.../belka-ollama]
+azurerm_container_app.api: Modifications complete after 38s [id=.../belka-api]
+Apply complete! Resources: 1 added, 3 changed, 0 destroyed.
+$ curl -fsS $URL/health   # teste de fumaça
+{"status":"ok","versao":"0.1.0","llm":"Ollama local (configurável)","modo_demo_disponivel":true,"telemetria":true}

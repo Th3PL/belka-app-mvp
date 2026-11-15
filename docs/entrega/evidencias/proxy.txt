@@ -1,0 +1,8 @@
+$ curl -s -o /dev/null -w '%{http_code}' https://belka-ollama.salmonisland-04dfa6a6.brazilsouth.azurecontainerapps.io/api/tags              # sem token
+401
+$ curl -s -H 'Authorization: Bearer errado' https://belka-ollama.salmonisland-04dfa6a6.brazilsouth.azurecontainerapps.io/api/tags   # token errado
+unauthorized [401]
+
+$ curl -s -X POST https://belka-api.salmonisland-04dfa6a6.brazilsouth.azurecontainerapps.io/api/perguntar -d '{"pergunta":"o que fazer em caso de enchente","configuracao":"rag"}'
+{"resposta":"Em caso de enchente, siga as orientações da Defesa Civil e busque um local seguro. Evite ruas alagadas, veículos ou caminhos sem sinais visíveis. Se necessário, prepare documentos e itens essenciais para eventual deslocamento. Não espere a água alcançar um nível perigoso para procurar segurança.","citacoes":["K01","K02"],"configuracao":"rag","fundamentada":true,"ferramentas":[],"meteorologia":null,"erros_ferramentas":[],"json_valido_modelo":true,"aviso":"Protótipo educativo. Não substitui alertas oficiais da Defesa Civil."}
+[HTTP 200 em 20.924334s]

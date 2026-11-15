@@ -1,0 +1,12 @@
+$ az storage blob list --account-name stbelkatf2538618077 -c tfstate --auth-mode login -o table
+Nome           Tamanho    Modificado                 Lease
+-------------  ---------  -------------------------  ---------
+belka.tfstate  34523      2026-11-15T18:47:43+00:00  available
+
+$ az storage account show -n stbelkatf2538618077 --query "{chaveCompartilhada:allowSharedKeyAccess, blobPublico:allowBlobPublicAccess, tls:minimumTlsVersion}" -o table
+ChaveCompartilhada    BlobPublico    Tls
+--------------------  -------------  ------
+False                 False          TLS1_2
+
+$ git ls-files | grep -E "tfstate|tfvars$"   # nada versionado
+(vazio)

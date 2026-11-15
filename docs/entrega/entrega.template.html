@@ -153,7 +153,8 @@ user=10001 size=111009896</pre>
   </table>
   <pre>{{EVID_INGRESS}}</pre>
   <!--PRINT:05-terraform-apply.png|terraform apply executado pelo GitHub Actions-->
-  <!--PRINT:06-azure-recursos.png|Recursos do rg-belka no portal Azure-->
+  <!--PRINT:06-azure-container-app.png|Container App belka-api: Brazil South, ambiente Express, tags "gerenciado: terraform"-->
+  <!--PRINT:06-azure-recursos.png|Recursos do rg-belka (lista gerada pelo Terraform)-->
   <!--PRINT:07-tfstate.png|Blob belka.tfstate no Storage Account (state remoto)-->
 </section>
 
@@ -199,7 +200,11 @@ Gitleaks: failure · Semgrep: success · Build + Trivy: skipped · Deploy: skipp
     <tr><td>Erros</td><td><code>countif(success == false)</code> e taxa de erro %</td></tr>
     <tr><td>Saturação</td><td>Métricas do Container App: <code>UsageNanoCores</code> (CPU) e <code>WorkingSetBytes</code> (memória)</td></tr>
   </table>
-  <!--PRINT:12-workbook.png|Workbook "Belka - Sinais de Ouro" com os 4 sinais-->
+  <!--PRINT:12a-workbook-latencia.png|Workbook "Belka - Sinais de Ouro" — 1. Latência (p50/p95)-->
+  <!--PRINT:12b-workbook-trafego.png|Workbook — 2. Tráfego por rota-->
+  <!--PRINT:12c-workbook-erros.png|Workbook — 3. Erros (falhas e taxa de erro)-->
+  <!--PRINT:12d-workbook-saturacao.png|Workbook — 4. Saturação (CPU e memória do Container App)-->
+  <!--PRINT:12e-appinsights-visao-geral.png|Application Insights — visão geral (falhas, tempo de resposta, requisições)-->
   <h3>Alertas</h3>
   <table>
     <tr><th>Alerta</th><th>Condição</th><th>Ação</th></tr>
@@ -257,7 +262,7 @@ Gitleaks: failure · Semgrep: success · Build + Trivy: skipped · Deploy: skipp
   </table>
   <div class="note">Com o LLM sempre ligado (1 réplica 24×7) o custo subiria para ~US$ 130/mês só no <code>belka-ollama</code>; por isso ele escala a zero e só fica com 1 réplica fixa durante a avaliação. Após a avaliação, <code>terraform destroy</code> remove tudo.</div>
   <!--PRINT:15-calculadora.png|Estimativa na Calculadora de Preços da Azure-->
-  <!--PRINT:16-custo-real.png|Cost Management — custo acumulado real da assinatura-->
+  <!--PRINT:16-custo-real.png|Saldo do crédito Azure for Students (microsoftazuresponsorships.com) — a API de Cost Management não está disponível para essa assinatura-->
 
   <h2 style="margin-top:22px">9. Reprodutibilidade</h2>
   <p>O <a href="{{REPO}}#readme">README</a> traz o passo a passo completo: rodar local com <code>docker compose up --build</code>; criar a base da nuvem com <code>infra/bootstrap.sh</code> (resource groups, state remoto, identidade OIDC); cadastrar Secrets/Variables; e publicar com um <code>git push</code> na <code>main</code>.</p>

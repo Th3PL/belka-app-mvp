@@ -11,7 +11,7 @@ URL="${URL:-https://belka-api.salmonisland-04dfa6a6.brazilsouth.azurecontainerap
 REPO="${REPO:-https://github.com/Th3PL/belka-app-mvp}"
 RUN_BLOCKED="${RUN_BLOCKED:-$REPO/actions/runs/43745100897}"
 RUN_FIXED="${RUN_FIXED:-$REPO/actions?query=branch%3Ademo%2Fsegredo-vazado}"
-RUN_DEPLOY="${RUN_DEPLOY:-$REPO/actions?query=branch%3Amain}"
+RUN_DEPLOY="${RUN_DEPLOY:-$REPO/actions/runs/43747965034}"
 
 esc() { sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' "$1"; }
 EVID_INGRESS="$( [ -f evidencias/ingress.txt ] && esc evidencias/ingress.txt || echo 'Rode: az containerapp show ... (ver README)')"

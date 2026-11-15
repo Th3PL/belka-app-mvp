@@ -1,0 +1,10 @@
+# Alerta disparado (Azure Monitor) — requisições com falha geradas em 2026-11-15T18:48:50Z (UTC)
+$ for i in $(seq 1 30); do curl -X POST .../api/perguntar -d '{"configuracao":"rag_lora"}'; done
+respostas HTTP: 30 503
+
+$ az rest --method get --url '.../Microsoft.AlertsManagement/alerts?targetResourceGroup=rg-belka&timeRange=1h'
+Regra                   Severidade    Condicao    Estado    Disparado_em
+----------------------  ------------  ----------  --------  ----------------------------
+alerta-belka-erros-5xx  Sev1          Fired       New       2026-11-15T18:51:32.3593161Z
+alerta-belka-erros-5xx  Sev1          Resolved    New       2026-11-15T18:15:33.3912818Z
+alerta-belka-erros-5xx  Sev1          Resolved    New       2026-11-15T18:10:36.4158061Z

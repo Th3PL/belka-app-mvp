@@ -1,0 +1,14 @@
+$ az resource list -g rg-belka --query "[].{nome:name, tipo:type, regiao:location, gerenciado:tags.gerenciado}" -o table
+Nome                                  Tipo                                                Regiao       Gerenciado
+------------------------------------  --------------------------------------------------  -----------  ------------
+ag-belka-email                        Microsoft.Insights/actiongroups                     global       terraform
+log-belka                             Microsoft.OperationalInsights/workspaces            brazilsouth  terraform
+appi-belka                            Microsoft.Insights/components                       brazilsouth  terraform
+cae-belka                             Microsoft.App/managedEnvironments                   brazilsouth  terraform
+alerta-belka-erros-5xx                Microsoft.Insights/metricalerts                     global       terraform
+belka-ollama                          Microsoft.App/containerApps                         brazilsouth  terraform
+belka-api                             Microsoft.App/containerApps                         brazilsouth  terraform
+2d002661-2e87-5dff-b8ff-989f7eae6dcd  Microsoft.Insights/workbooks                        brazilsouth  terraform
+alerta-belka-cpu                      Microsoft.Insights/metricalerts                     global       terraform
+Application Insights Smart Detection  microsoft.insights/actiongroups                     global
+Failure Anomalies - appi-belka        microsoft.alertsmanagement/smartDetectorAlertRules  global

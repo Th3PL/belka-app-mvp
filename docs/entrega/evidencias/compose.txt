@@ -1,0 +1,17 @@
+$ docker compose up -d --build
+$ docker compose ps
+SERVICE   IMAGE                STATUS                    PORTS
+api       belka-api:local      Up 8 seconds (healthy)    0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+ollama    belka-ollama:local   Up 14 seconds (healthy)   8080/tcp, 11434/tcp
+
+$ docker compose exec api id   # usuário do processo
+uid=10001(belka) gid=999(belka) groups=999(belka)
+$ docker compose exec ollama id
+uid=10001(ollama) gid=999(ollama) groups=999(ollama)
+
+$ curl -s localhost:8000/health
+{"status":"ok","versao":"0.1.0","llm":"Ollama local (configurável)","modo_demo_disponivel":true,"telemetria":false}
+
+$ curl -s -X POST localhost:8000/api/perguntar -d {"pergunta":"o que fazer em caso de enchente","configuracao":"rag"}
+{"resposta":"Em caso de enchente, siga as orientações da Defesa Civil e busque um local seguro. Evite ruas alagadas, veículos ou áreas inexploradas. Não espere a água alcançar um nível perigoso para procurar segurança.","citacoes":["K01","K02"],"confi
+ ...
